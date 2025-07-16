@@ -94,13 +94,13 @@ root.geometry("550x300")
 
 #The Label asking the user to pick a USB
 USBLabel = tk.Label(root, text="Choose your USB:")
-USBLabel.grid(col=1, row=0)
-USBLabel.pack(pady=5)
+USBLabel.grid(row = 0, column = 0)
+#USBLabel.pack(pady=5)
 
 #Combobox for the user to pick a USB
 USBChoice = ttk.Combobox(root, values=usb_drives)
-USBChoice.grid(col=2, row=0)
-USBChoice.pack(pady=5)
+USBChoice.grid(column=1, row=0)
+#USBChoice.pack(pady=5)
 
 #information about where the E01 Mac address is located
 #EO1LocationLabel = tk.Label(root, text="The IDSU has a sticker next to its Cloud ID sticker, in the gap at the bottom of the unit.\nThat sticker contains the E01 Mac address.\nYou will need the first 4 and last 4 characters of that E01.\nFor example if the E01 is 48:8F:2C:7B:5A:4C you would need 488F and 5A4C.")
@@ -108,23 +108,23 @@ USBChoice.pack(pady=5)
 
 #Label asking for the first 4 characters of the E01
 FirstFourLabel = tk.Label(root, text="First 4 Characters of the E01 Mac Address:")
-FirstFourLabel.pack()
+FirstFourLabel.grid(column=0, row=1)
 
 #Entry to hold the first 4 of the E01
 FirstEntry = tk.Entry(root)
-FirstEntry.pack()
+FirstEntry.grid(column=1, row=1)
 
 #Label asking for the last 4 characters of the E01
 LastFourLabel = tk.Label(root, text="Last 4 Characters of the E01 Mac Address:")
-LastFourLabel.pack()
+LastFourLabel.grid(column=0, row=2)
 
 #Entry to hold the last 4 of the E01
 LastEntry = tk.Entry(root)
-LastEntry.pack()
+LastEntry.grid(column=1, row=2)
 
 #button to submit the information and create the USB
 SubmitButton = tk.Button(root, text="Create Pairing Key", command=click)
-SubmitButton.pack()
+SubmitButton.grid(column=1, row=3)
 
 #checks to make sure a USB is inserted into the computer
 if len(usb_drives) <= 0:

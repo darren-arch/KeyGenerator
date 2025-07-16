@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-import os, string, time, ctypes
+import os, string, time, ctypes, subprocess
 
 
 
@@ -31,8 +31,12 @@ def click():
         messagebox.showerror("Colon", "Do not include the colon (:) with the last four.")
         return
     
-    with open("key.cfg", "w") as file:
+    subprocess.call(f"cmd /c format {usb} /FS:FAT32 /Q /Y")
+    filepath = os.path.join(usb, "key.cfg")
+    print(filepath)
+    with open(filepath, "w") as file:
         file.write(f"{firstfour},{lastfour}")
+    print("wrote to usb")
 
 def get_usb_drives():
     #creates an array to store the usb info on the computer 
@@ -44,16 +48,13 @@ def get_usb_drives():
     #print(f"Bitmask: {bin(bitmask)[2:].zfill(26)}")
     #loops through each uppercase letter in the alphabet
     for letter in string.ascii_uppercase:
-        print(f"Letter: {letter}")
-        print(f"bitmask & 1: {bitmask & 1}")
         # for each uppercase letter it checks to see if the drive is active by checking the smallest bit
         # for 11100 it would check the 0 on the right
         if bitmask & 1:
             #if true it makes the drive match the current letter
-            drive = f"{letter}:/"
+            drive = f"{letter}:\\"
             #then it finds the type of drive, such as removable, internal, etc
             type = ctypes.windll.kernel32.GetDriveTypeW(drive)
-            print(type)
             #if the drive is a removable drive (type 2) then it adds that drive to the drive array
             if type == 2:  # DRIVE_REMOVABLE
                 drive_list.append(drive)
@@ -62,7 +63,7 @@ def get_usb_drives():
     #returns the array
     return drive_list
 
-print("USB drives:", get_usb_drives())
+usb_drives = get_usb_drives()
 
 root = tk.Tk()
 root.title('AvaLAN Key Generator')
@@ -71,7 +72,7 @@ root.geometry("550x300")
 label = tk.Label(root, text="Choose your USB:")
 label.pack(pady=10)
 
-combo_box = ttk.Combobox(root, values=["USB 1", "USB 2"])
+combo_box = ttk.Combobox(root, values=usb_drives)
 combo_box.pack(pady=10)
 
 label = tk.Label(root, text="The IDSU has a sticker next to its Cloud ID sticker, in the gap at the bottom of the unit.\nThat sticker contains the E01 Mac address.\nYou will need the first 4 and last 4 characters of that E01.\nFor example if the E01 is 48:8F:2C:7B:5A:4C you would need 488F and 5A4C.")

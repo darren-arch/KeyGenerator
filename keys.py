@@ -6,11 +6,18 @@ import os, string, time, ctypes, subprocess
 
 
 def click():
-    usb = combo_box.get()
+    #gets the USB that the user chose
+    usb = USBChoice.get()
+    #checks to make sure that the user chose a usb
     if not usb:
         messagebox.showerror("No USB Chosen", "Choose a USB.")
         return
-    firstfour = first.get()
+    
+    #gets the first 4 characters of the E01
+    firstfour = FirstEntry.get()
+    #makes sure that firstfour is capitalized
+    firstfour = firstfour.upper()
+    #checks to make sure that firstfour is 4 characters long and doesn't contain a :
     if len(firstfour) < 4:
         messagebox.showerror("Short","There are less than 4 characters for the first four.")
         return
@@ -20,7 +27,12 @@ def click():
     elif firstfour.find(":") != -1:
         messagebox.showerror("Colon", "Do not include the colon (:) with the first four.")
         return
-    lastfour = last.get()
+    
+    #gets the last 4 characters of the E01
+    lastfour = LastEntry.get()
+    #makes sure that firstfour is capitalized
+    lastfour = lastfour.upper()
+    #checks to make sure that lastfour is 4 characters long and doesn't contain a :
     if len(lastfour) < 4:
         messagebox.showerror("Short","There are less than 4 characters for the last four.")
         return
@@ -31,12 +43,19 @@ def click():
         messagebox.showerror("Colon", "Do not include the colon (:) with the last four.")
         return
     
+    #calls a windows command to format the USB to FAT32
+    #the call function will wait for the command to finish before continuing the program
     subprocess.call(f"cmd /c format {usb} /FS:FAT32 /Q /Y")
+    
+    #creates the total filepath to write the key.cfg file to
     filepath = os.path.join(usb, "key.cfg")
-    print(filepath)
+
+    #creates the file in the usb
     with open(filepath, "w") as file:
+        #writes the key information to the file
         file.write(f"{firstfour},{lastfour}")
-    print("wrote to usb")
+    #lets the user know that the USB key was successfully generated
+    messagebox.showinfo("Success", "USB Key Successfully Generated")
 
 def get_usb_drives():
     #creates an array to store the usb info on the computer 
@@ -63,34 +82,53 @@ def get_usb_drives():
     #returns the array
     return drive_list
 
+#calls the get_usb_drives function to check what usb drives are connected to the computer
 usb_drives = get_usb_drives()
 
+#window for the program
 root = tk.Tk()
+#title for the window
 root.title('AvaLAN Key Generator')
+#specifies the size of the window
 root.geometry("550x300")
 
-label = tk.Label(root, text="Choose your USB:")
-label.pack(pady=10)
+#The Label asking the user to pick a USB
+USBLabel = tk.Label(root, text="Choose your USB:")
+USBLabel.pack(pady=5)
 
-combo_box = ttk.Combobox(root, values=usb_drives)
-combo_box.pack(pady=10)
+#Combobox for the user to pick a USB
+USBChoice = ttk.Combobox(root, values=usb_drives)
+USBChoice.pack(pady=5)
 
-label = tk.Label(root, text="The IDSU has a sticker next to its Cloud ID sticker, in the gap at the bottom of the unit.\nThat sticker contains the E01 Mac address.\nYou will need the first 4 and last 4 characters of that E01.\nFor example if the E01 is 48:8F:2C:7B:5A:4C you would need 488F and 5A4C.")
-label.pack()
-label = tk.Label(root, text="What are the first 4 Characters of the E01 Mac Address:")
-label.pack()
+#information about where the E01 Mac address is located
+EO1LocationLabel = tk.Label(root, text="The IDSU has a sticker next to its Cloud ID sticker, in the gap at the bottom of the unit.\nThat sticker contains the E01 Mac address.\nYou will need the first 4 and last 4 characters of that E01.\nFor example if the E01 is 48:8F:2C:7B:5A:4C you would need 488F and 5A4C.")
+EO1LocationLabel.pack()
 
-first = tk.Entry(root)
-first.pack()
+#Label asking for the first 4 characters of the E01
+FirstFourLabel = tk.Label(root, text="What are the first 4 Characters of the E01 Mac Address:")
+FirstFourLabel.pack()
 
-label = tk.Label(root, text="What are the last 4 Characters of the E01 Mac Address:")
-label.pack()
+#Entry to hold the first 4 of the E01
+FirstEntry = tk.Entry(root)
+FirstEntry.pack()
 
-last = tk.Entry(root)
-last.pack()
+#Label asking for the last 4 characters of the E01
+LastFourLabel = tk.Label(root, text="What are the last 4 Characters of the E01 Mac Address:")
+LastFourLabel.pack()
 
-button = tk.Button(root, text="Create Pairing Key", command=click)
-button.pack()
+#Entry to hold the last 4 of the E01
+LastEntry = tk.Entry(root)
+LastEntry.pack()
+
+#button to submit the information and create the USB
+SubmitButton = tk.Button(root, text="Create Pairing Key", command=click)
+SubmitButton.pack()
+
+#checks to make sure a USB is inserted into the computer
+if len(usb_drives) <= 0:
+    #informs the user to plug a usb into the computer then exits
+    messagebox.showerror("No USB", "Plug a USB drive into the computer")
+    exit()
 
 root.mainloop()
 

@@ -3,7 +3,11 @@ from tkinter import ttk
 from tkinter import messagebox
 import os, string, time, ctypes, subprocess
 
-
+# to do:
+# 1. show the drive name
+# to get the name of the drive name GetVolumeInformation or GetLogicalDriveStrings, possibly GetLogicalDriveStringsA or GetLogicalDriveStringsW
+# use this to better allow users to identify the drive
+# 2. give a warning before formatting
 
 def click():
     #gets the USB that the user chose

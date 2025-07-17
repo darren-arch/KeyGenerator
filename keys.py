@@ -1,13 +1,19 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-import os, string, time, ctypes, subprocess
+#from PIL import Image, ImageTk
+import os, string, time, ctypes, subprocess, webbrowser
 
 # to do:
+# I'm not going to do 1 because if the wrong volume name is grabbed or an internal volume name that is not seen by the user is grabbed
+# it would add a lot of confusion
 # 1. show the drive name
 # to get the name of the drive name GetVolumeInformation or GetLogicalDriveStrings, possibly GetLogicalDriveStringsA or GetLogicalDriveStringsW
 # use this to better allow users to identify the drive
 # 2. give a warning before formatting
+
+def link():
+    webbrowser.open_new("https://support.avalan.com/portal/en/kb/articles/how-to-remake-an-idsu-s-pairing-key-17-7-2025")
 
 def click():
     #gets the USB that the user chose
@@ -47,6 +53,10 @@ def click():
         messagebox.showerror("Colon", "Do not include the colon (:) with the last four.")
         return
     
+    #Warns the User that their usb is about to be formatted
+    confirm = messagebox.askquestion("Format", "You are about to format your USB.\nAll data on it will be ERASED!\nDo you want to Continue?", icon=messagebox.WARNING, )
+    if confirm == "no":
+        return
     #calls a windows command to format the USB to FAT32
     #the call function will wait for the command to finish before continuing the program
     subprocess.call(f"cmd /c format {usb} /FS:FAT32 /Q /Y")
@@ -95,40 +105,62 @@ root = tk.Tk()
 root.title('AvaLAN Key Generator')
 #specifies the size of the window
 root.geometry("550x300")
+#sets the icon to the avalan logo
+root.iconbitmap("AvaLANLogo.ico")
+
+# configures the amount of space that the column takes up
+# the first number is the column that is being configured, and the second number is the amount of space that the column takes up
+# using 1 means that it uses 100% of the space and centers it
+root.columnconfigure(0, weight=1)
+
+AvaLANImage = tk.PhotoImage(file=str("AvaLAN.png"))
+AvaLANImage = AvaLANImage.subsample(4,4)
+ImageLabel = tk.Label(root, image=AvaLANImage)
+ImageLabel.grid(row=0, column=0, pady=5)
+
+#to keep all of the items centered and not spread out they need a frame
+# the frame is made in that root and put at row 0 column 0 and gets centered by the root window
+# everything inside of the frame is equally separated and centered in their own rows and columns
+frame = tk.Frame(root)
+frame.grid(row=1, column=0)
 
 #The Label asking the user to pick a USB
-USBLabel = tk.Label(root, text="Choose your USB:")
-USBLabel.grid(row = 0, column = 0)
+USBLabel = tk.Label(frame, text="Choose your USB:")
+USBLabel.grid(row = 0, column = 0, pady=5)
 #USBLabel.pack(pady=5)
 
 #Combobox for the user to pick a USB
-USBChoice = ttk.Combobox(root, values=usb_drives)
-USBChoice.grid(column=1, row=0)
+USBChoice = ttk.Combobox(frame, values=usb_drives, width=17)
+USBChoice.grid(column=1, row=0, padx=5, pady=5)
 #USBChoice.pack(pady=5)
 
 #information about where the E01 Mac address is located
-#EO1LocationLabel = tk.Label(root, text="The IDSU has a sticker next to its Cloud ID sticker, in the gap at the bottom of the unit.\nThat sticker contains the E01 Mac address.\nYou will need the first 4 and last 4 characters of that E01.\nFor example if the E01 is 48:8F:2C:7B:5A:4C you would need 488F and 5A4C.")
+#EO1LocationLabel = tk.Label(frame, text="The IDSU has a sticker next to its Cloud ID sticker, in the gap at the bottom of the unit.\nThat sticker contains the E01 Mac address.\nYou will need the first 4 and last 4 characters of that E01.\nFor example if the E01 is 48:8F:2C:7B:5A:4C you would need 488F and 5A4C.")
 #EO1LocationLabel.pack()
 
 #Label asking for the first 4 characters of the E01
-FirstFourLabel = tk.Label(root, text="First 4 Characters of the E01 Mac Address:")
-FirstFourLabel.grid(column=0, row=1)
+FirstFourLabel = tk.Label(frame, text="First 4 Characters of the E01 Mac Address:")
+FirstFourLabel.grid(column=0, row=1, pady=5)
 
 #Entry to hold the first 4 of the E01
-FirstEntry = tk.Entry(root)
-FirstEntry.grid(column=1, row=1)
+FirstEntry = tk.Entry(frame, width=20)
+FirstEntry.grid(column=1, row=1, padx=5, pady=5)
 
 #Label asking for the last 4 characters of the E01
-LastFourLabel = tk.Label(root, text="Last 4 Characters of the E01 Mac Address:")
-LastFourLabel.grid(column=0, row=2)
+LastFourLabel = tk.Label(frame, text="Last 4 Characters of the E01 Mac Address:")
+LastFourLabel.grid(column=0, row=2, pady=5)
 
 #Entry to hold the last 4 of the E01
-LastEntry = tk.Entry(root)
-LastEntry.grid(column=1, row=2)
+LastEntry = tk.Entry(frame, width=20)
+LastEntry.grid(column=1, row=2, padx=5, pady=5)
+
+#help button that links to the knowledgebase article on how to use the tool
+HelpButton = tk.Button(frame, text="Help", command=link)
+HelpButton.grid(column=0, row=3, pady=5)
 
 #button to submit the information and create the USB
-SubmitButton = tk.Button(root, text="Create Pairing Key", command=click)
-SubmitButton.grid(column=1, row=3)
+SubmitButton = tk.Button(frame, text="Create Pairing Key", command=click)
+SubmitButton.grid(column=1, row=3, pady=5, padx=5)
 
 #checks to make sure a USB is inserted into the computer
 if len(usb_drives) <= 0:

@@ -3,7 +3,16 @@ from tkinter import ttk
 from tkinter import messagebox
 import os, string, time, ctypes, subprocess, webbrowser
 
+#how to compile the program into a .exe
+#first run the python virtual enviroment when in the parent directory run .\.venv\Scripts\activate
+#then you can run pyinstaller with the script below
+#onefile makes the executable all one file
+#windowed makes the exe not open a cmd window to run
+#the add data adds the avalan logos
+#icon sets the icon of the exe
+#pyinstaller --onefile --windowed --add-data "AvaLAN.png:." --add-data "AvaLANLogo.ico:." --icon=AvaLANLogo.ico keys.py
 
+#this allows the python program to use the included AvaLAN.png and AvaLANLogo.ico files
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
@@ -12,9 +21,11 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
+#this is for the help button, it links to the knowledge base article on how to use the app
 def link():
     webbrowser.open_new("https://support.avalan.com/portal/en/kb/articles/how-to-remake-an-idsu-s-pairing-key-17-7-2025")
 
+#this runs when the user clicks SubmitButton/Create Pairing Key button
 def click():
     #gets the USB that the user chose
     usb = USBChoice.get()
@@ -134,10 +145,6 @@ USBChoice = ttk.Combobox(frame, values=usb_drives, width=17)
 USBChoice.grid(column=1, row=0, padx=5, pady=5)
 #USBChoice.pack(pady=5)
 
-#information about where the E01 Mac address is located
-#EO1LocationLabel = tk.Label(frame, text="The IDSU has a sticker next to its Cloud ID sticker, in the gap at the bottom of the unit.\nThat sticker contains the E01 Mac address.\nYou will need the first 4 and last 4 characters of that E01.\nFor example if the E01 is 48:8F:2C:7B:5A:4C you would need 488F and 5A4C.")
-#EO1LocationLabel.pack()
-
 #Label asking for the first 4 characters of the E01
 FirstFourLabel = tk.Label(frame, text="First 4 Characters of the E01 Mac Address:")
 FirstFourLabel.grid(column=0, row=1, pady=5)
@@ -166,5 +173,6 @@ if len(usb_drives) <= 0:
     #informs the user to plug a usb into the computer then exits
     messagebox.showerror("No USB", "Plug a USB drive into the computer")
 
+#runs the tkinter root
 root.mainloop()
 

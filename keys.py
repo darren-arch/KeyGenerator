@@ -1,16 +1,16 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-#from PIL import Image, ImageTk
 import os, string, time, ctypes, subprocess, webbrowser
 
-# to do:
-# I'm not going to do 1 because if the wrong volume name is grabbed or an internal volume name that is not seen by the user is grabbed
-# it would add a lot of confusion
-# 1. show the drive name
-# to get the name of the drive name GetVolumeInformation or GetLogicalDriveStrings, possibly GetLogicalDriveStringsA or GetLogicalDriveStringsW
-# use this to better allow users to identify the drive
-# 2. give a warning before formatting
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 def link():
     webbrowser.open_new("https://support.avalan.com/portal/en/kb/articles/how-to-remake-an-idsu-s-pairing-key-17-7-2025")
@@ -106,14 +106,14 @@ root.title('AvaLAN Key Generator')
 #specifies the size of the window
 root.geometry("550x300")
 #sets the icon to the avalan logo
-root.iconbitmap("AvaLANLogo.ico")
+root.iconbitmap(resource_path("AvaLANLogo.ico"))
 
 # configures the amount of space that the column takes up
 # the first number is the column that is being configured, and the second number is the amount of space that the column takes up
 # using 1 means that it uses 100% of the space and centers it
 root.columnconfigure(0, weight=1)
 
-AvaLANImage = tk.PhotoImage(file=str("AvaLAN.png"))
+AvaLANImage = tk.PhotoImage(file=str(resource_path("AvaLAN.png")))
 AvaLANImage = AvaLANImage.subsample(4,4)
 ImageLabel = tk.Label(root, image=AvaLANImage)
 ImageLabel.grid(row=0, column=0, pady=5)
@@ -162,11 +162,9 @@ HelpButton.grid(column=0, row=3, pady=5)
 SubmitButton = tk.Button(frame, text="Create Pairing Key", command=click)
 SubmitButton.grid(column=1, row=3, pady=5, padx=5)
 
-#checks to make sure a USB is inserted into the computer
 if len(usb_drives) <= 0:
     #informs the user to plug a usb into the computer then exits
     messagebox.showerror("No USB", "Plug a USB drive into the computer")
-    exit()
 
 root.mainloop()
 
